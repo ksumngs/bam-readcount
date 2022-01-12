@@ -18,6 +18,8 @@ jobs:
           - os: windows-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          ref: v1.0.0
       - uses: jwlawson/actions-setup-cmake@v1.9
       - run: |
           mkdir build
