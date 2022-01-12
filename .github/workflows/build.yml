@@ -1,0 +1,38 @@
+name: Binary Builder
+on:
+  push:
+    tags:
+      - 'v[0-9]+.*'
+  workflow_dispatch:
+jobs:
+  build:
+    name: Build Binaries
+    runs-on: ${{ matrix.config.os }}
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - os: ubuntu-latest
+          - os: macos-latest
+          - os: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: jwlawson/actions-setup-cmake@v1.9
+      - run: |
+          mkdir build
+          cd build
+          cmake ..
+          make
+          tar czvf bam-readcount_${{ matrix.config.os }}.tar.gz bin/bam-readcount
+        shell: bash
+      - uses: actions/upload-artifact@v2
+        with:
+          name: bin-${{ matrix.config.os }}
+          path: build/bin/bam-readcount_*.tar.gz
+      - uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.ref }}
+          file_glob: true
+          file: build/bin/bam-readcount_*.tar.gz
