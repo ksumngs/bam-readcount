@@ -26,15 +26,16 @@ jobs:
           cd build
           cmake ..
           make
-          tar czvf bam-readcount_${{ matrix.config.os }}.tar.gz bin/bam-readcount
+          mv bin/bam-readcount .
+          tar czvf bam-readcount_${{ matrix.config.os }}.tar.gz bam-readcount
         shell: bash
       - uses: actions/upload-artifact@v2
         with:
           name: bin-${{ matrix.config.os }}
-          path: build/bin/bam-readcount_*.tar.gz
+          path: build/bam-readcount_*.tar.gz
       - uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref }}
           file_glob: true
-          file: build/bin/bam-readcount_*.tar.gz
+          file: build/bam-readcount_*.tar.gz
